@@ -1,13 +1,14 @@
 import serial
 import json
 import requests
+from datetime import datetime
 
 arduino_port = 'COM3'  # For Linux use something like '/dev/ttyUSB0'
 baud_rate = 9600
 
 ser = serial.Serial(arduino_port, baud_rate)
 
-server_url = 'http://your-server-url.com/api'
+server_url = 'http://localhost:3000'
 
 def send_to_server(json_data):
     try:
@@ -25,7 +26,13 @@ def read_serial_json():
             try:
                 serial_data = ser.readline().decode('utf-8').strip()
 
-                json_data = json.loads(serial_data)
+                current_dateTime = datetime.now()
+                
+                json_data = {
+                    "localDeviceId": 0,
+                    "data": json.loads(serial_data),
+                    "createdAt": str(current_dateTime)
+                }
 
                 print("Received JSON data:", json_data)
                 send_to_server(json_data)
